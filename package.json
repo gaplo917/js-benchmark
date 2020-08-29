@@ -6,7 +6,7 @@
     "build": "cross-env NODE_ENV=production webpack --config webpack/webpack.config.prod.js --colors",
     "webpack-test": "rm -rf ./src/generated/*.js && node ./src/node/genJs.mjs && yarn build && ls -al build/js",
     "start": "node src/node/perf.mjs",
-    "start-all": "ARR_SIZE=1 yarn start && ARR_SIZE=10 yarn start && ARR_SIZE=100 yarn start && ARR_SIZE=1000 yarn start && ARR_SIZE=10000 yarn start && ARR_SIZE=100000 yarn start && ARR_SIZE=1000000 yarn start"
+    "start-all": "sh perf.sh"
   },
   "repository": {
     "type": "git",
