@@ -1,7 +1,7 @@
 import fs from 'fs'
 import path from 'path'
 
-const fnHeader = `import { sample } from '../data'`
+const fnHeader = `import { sample as arr } from '../data'`
 
 function genIdealJs(numOfFunction) {
   const fn = `
@@ -21,18 +21,17 @@ const calSum = (arr) => {
 
   fs.writeFileSync(
     path.resolve(`./src/generated/ideal-${numOfFunction}.js`),
-    `${fnHeader}\n${fn}\n${fnStr}`,
+    `${fnHeader}\n${fn}\n${fnStr}\nconsole.log(${fnTemplate})`,
   )
 }
-const random = () => '_' + Math.random().toString(36).substring(4) // assume the random variable name is so random
 
 function genNativeMapFilterReduce(numOfFunction) {
   const fn = ``
   const fnTemplate = () => {
-    const r1 = random()
-    const r2 = random()
-    const r3 = random()
-    const r4 = random()
+    const r1 = 'a'
+    const r2 = 'it'
+    const r3 = 'b'
+    const r4 = 'sth'
     // webpack should rename it for better gzip, let see if it is work
     return `arr.filter(${r1} => ${r1}.money !== null).map(${r2} => ${r2}.money * 2).reduce((${r4}, ${r3}) => ${r4} + ${r3}, 0)`
   }
@@ -41,13 +40,13 @@ function genNativeMapFilterReduce(numOfFunction) {
 
   fs.writeFileSync(
     path.resolve(`./src/generated/nativeMapFilterReduce-${numOfFunction}.js`),
-    `${fnHeader}\n${fn}\n${fnStr}`,
+    `${fnHeader}\n${fn}\n${fnStr}\nconsole.log(${fnTemplate()})`,
   )
 }
 
 function genArrayExt(numOfFunction) {
   const fn = `
-Array.prototype.ktMapNotNull = function (predicate) {
+Array.prototype.ktMapNotNull = function (transform) {
   const result = []
   for (let i = 0, len = this.length; i < len; i++) {
     const e = transform(this[i])
@@ -65,18 +64,20 @@ Array.prototype.ktSum = function () {
   }
   return sum
 }
+
+Array.prototype.ktMap = Array.prototype.map
   `
   const fnTemplate = () => {
-    const r1 = random()
-    const r2 = random()
-    return `arr.ktMapNotNull(${r1} => ${r1}.money).map(${r2} => ${r2} * 2).ktSum()`
+    const r1 = 'it'
+    const r2 = 'sth'
+    return `arr.ktMapNotNull(${r1} => ${r1}.money).ktMap(${r2} => ${r2} * 2).ktSum()`
   }
 
   const fnStr = new Array(numOfFunction).fill(fnTemplate()).join('\n')
 
   fs.writeFileSync(
     path.resolve(`./src/generated/array-ext-${numOfFunction}.js`),
-    `${fnHeader}\n${fn}\n${fnStr}`,
+    `${fnHeader}\n${fn}\n${fnStr}\nconsole.log(${fnTemplate()})`,
   )
 }
 

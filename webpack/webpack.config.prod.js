@@ -6,18 +6,19 @@ const CompressionPlugin = require('compression-webpack-plugin')
 
 module.exports = merge(common, {
   mode: 'production',
+  // devtool: 'source-map',
   stats: 'errors-only',
   bail: true,
   optimization: {
     minimizer: [
       new TerserPlugin({
         terserOptions: {
-          ecma: 'es5',
+          ecma: undefined,
           parse: {},
           compress: {},
           mangle: {
             properties: {
-              regex: /^_|_$|^ktFilterNotNull$|^ktMapNotNull$|^ktSum$/,
+              regex: /^_|_$|^ktFilterNotEmpty$|^ktMapNotNull$|^ktSum$|^ktMap$/,
             },
           },
           module: false,

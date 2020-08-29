@@ -21,4 +21,9 @@ yarn start-all
 
 ```
 yarn webpack-test
+
+# check to see if it is working in the node
+node build/js/ideal-1.js
+node build/js/array-ext-1.js
+node build/js/nativeMapFilterReduce-1.js
 ```

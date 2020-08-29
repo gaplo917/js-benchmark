@@ -1,9 +1,6 @@
 # dependencies
 node_modules
 
-# production
-build
-
 # misc
 .DS_Store
 
@@ -13,5 +10,3 @@ yarn.lock
 .yarnclean
 .vscode
 .idea
-
-src/generated
