@@ -2,7 +2,8 @@ import {
   isNotNullPredicate,
   someCalculation,
   someTransform,
-  sumReducer,
+  sumByReduceOp,
+  sumReduceOp,
 } from './common.mjs'
 
 class KtSeqNativeImpl {
@@ -12,41 +13,38 @@ class KtSeqNativeImpl {
   }
 
   resolve() {
-    let result = null
+    // assume the final functions must be an aggregation
+    let result = this.fns[this.fns.length - 1].initial
     for (let i = 0, len = this.wrapped.length; i < len; i++) {
       let value = this.wrapped[i]
-      let filtered = false
       for (let j = 0, len2 = this.fns.length; j < len2; j++) {
         const fn = this.fns[j]
-        switch (fn.__mode) {
-          case 0: // filter
-            if (!fn.apply(value)) {
-              filtered = true
-            }
+        // 0:filter, 1: transform, 2:aggregate
+        if (fn.__mode === 0) {
+          if (!fn.apply(value)) {
+            // if filtered, then all sub-sequence fn don't need to apply
+            // break the for-function-loop
             break
-          case 1: // transform
-            value = fn.apply(value)
-            break
-          case 2: // aggregate
-            if (result === null && fn.initial) {
-              result = fn.apply(fn.initial, value)
-            } else {
-              result = fn.apply(result, value)
-            }
-        }
-        if (filtered) {
-          // if filtered, then all sub-sequence fn don't need to apply
-          break
+          }
+        } else if (fn.__mode === 1) {
+          value = fn.apply(value)
+        } else if (fn.__mode === 2) {
+          if (!result) {
+            // no initial value, use the first element
+            result = value
+          } else {
+            result = fn.apply(result, value)
+          }
         }
       }
     }
     return result
   }
 
-  sum() {
+  sumBy(selector) {
     this.fns.push({
       __mode: 2,
-      apply: sumReducer,
+      apply: sumByReduceOp(selector),
       initial: 0,
     })
     return this.resolve()
@@ -117,23 +115,13 @@ Array.prototype.ktMapNotNullNative = function (transform) {
 }
 
 Array.prototype.ktDistinctNative = function () {
-  const set = new Set()
-  const result = []
-  for (let i = 0, len = this.length; i < len; i++) {
-    const e = this[i]
-    const oriSize = set.size
-    set.add(e)
-    if (set.size !== oriSize) {
-      result.push(e)
-    }
-  }
-  return result
+  return Array.from(new Set(this))
 }
 
-Array.prototype.ktSumNative = function () {
+Array.prototype.ktSumByNative = function (selector) {
   let sum = 0
   for (let i = 0, len = this.length; i < len; i++) {
-    sum += this[i]
+    sum += selector(this[i])
   }
   return sum
 }
@@ -142,8 +130,7 @@ export function arrayExtensionNative(arr) {
   return arr
     .ktMapNotNullNative(someTransform)
     .ktDistinctNative()
-    .map(someCalculation)
-    .ktSumNative()
+    .ktSumByNative(someCalculation)
 }
 
 export function lazySeqNativeImpl(arr) {
@@ -151,6 +138,5 @@ export function lazySeqNativeImpl(arr) {
     .ktAsSequenceNativeImpl()
     .mapNotNull(someTransform)
     .distinct()
-    .map(someCalculation)
-    .sum()
+    .sumBy(someCalculation)
 }

@@ -7,6 +7,7 @@ import {
   arrayExtensionNativeFunctionalOperator,
   nativeFunctionalOperator,
   nativeFunctionalOperatorOpti,
+  nativeReduceImperative,
 } from './perf-impl/nativeFunctional.mjs'
 import {
   arrayExtensionLodash,
@@ -25,11 +26,12 @@ import {
   ramdaPipeOpti,
 } from './perf-impl/ramdaImpl.mjs'
 import { arrayExtensionNative, lazySeqNativeImpl } from './perf-impl/native.mjs'
-import { nativeIdeal, nativeStandard } from './perf-impl/nativeIdeal.mjs'
+import { ideal, nativeStandard } from './perf-impl/ideal.mjs'
 import { arr, arrSize } from './perf-impl/common.mjs'
 
 const ans = nativeStandard(arr)
-assert.ok(nativeIdeal(arr) === ans)
+assert.ok(ideal(arr) === ans)
+assert.ok(nativeReduceImperative(arr) === ans)
 assert.ok(nativeFunctionalOperator(arr) === ans)
 assert.ok(nativeFunctionalOperatorOpti(arr) === ans)
 assert.ok(lodashOneByOne(arr) === ans)
@@ -55,7 +57,7 @@ const suite = new Benchmark.Suite('Standard Array Processing')
 // add tests
 suite
   .add('native-ideal-while', function () {
-    nativeIdeal(arr)
+    ideal(arr)
   })
   .add('native-standard-for-loop', function () {
     nativeStandard(arr)
@@ -65,6 +67,9 @@ suite
   })
   .add('native-fp-optimized', function () {
     nativeFunctionalOperatorOpti(arr)
+  })
+  .add('native-fp-reduce-imperative', function () {
+    nativeReduceImperative(arr)
   })
   .add('lodash-one-by-one', function () {
     lodashOneByOne(arr)

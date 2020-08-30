@@ -1,10 +1,11 @@
 import R from 'ramda'
 
 import {
-  mapNotNullReducer,
+  mapNotNullReduceOp,
   someCalculation,
   someNumIsNotNull,
   someTransform,
+  sumByReduceOp,
 } from './common.mjs'
 
 class KtSeqRamdaImpl {
@@ -12,8 +13,8 @@ class KtSeqRamdaImpl {
     this.wrapped = wrapped
     this.fns = []
   }
-  sum() {
-    this.fns.push(R.sum)
+  sumBy(selector) {
+    this.fns.push(R.reduce((acc, e) => acc + selector(e), 0))
     // sosad, R.pipe not accept array value, but `fns` size is very small that is negligible in large array size
     // but it is shameful to write in this way.
     return R.pipe(...this.fns)(this.wrapped)
@@ -30,7 +31,7 @@ class KtSeqRamdaImpl {
   }
 
   mapNotNull(transform) {
-    this.fns.push(R.reduce(mapNotNullReducer(transform), []))
+    this.fns.push(R.reduce(mapNotNullReduceOp(transform), []))
     return this
   }
 
@@ -45,11 +46,11 @@ Array.prototype.ktAsSequenceRamdaImpl = function () {
 }
 
 Array.prototype.ktMapNotNullRamda = function (tranform) {
-  return R.pipe(R.reduce(mapNotNullReducer(tranform), []))(this)
+  return R.pipe(R.reduce(mapNotNullReduceOp(tranform), []))(this)
 }
 
-Array.prototype.ktSumRamda = function () {
-  return R.sum(this)
+Array.prototype.ktSumByRamda = function (selector) {
+  return R.reduce(sumByReduceOp(selector), 0)(this)
 }
 
 Array.prototype.ktDistinctRamda = function () {
@@ -68,10 +69,9 @@ export function ramdaPipe(arr) {
 
 export function ramdaPipeOpti(arr) {
   return R.pipe(
-    R.reduce(mapNotNullReducer(someTransform), []),
+    R.reduce(mapNotNullReduceOp(someTransform), []),
     R.uniq,
-    R.map(someCalculation),
-    R.sum,
+    R.reduce((acc, e) => acc + someCalculation(e), 0),
   )(arr)
 }
 
@@ -79,8 +79,7 @@ export function arrayExtensionRamda(arr) {
   return arr
     .ktMapNotNullRamda(someTransform)
     .ktDistinctRamda()
-    .map(someCalculation)
-    .ktSumRamda()
+    .ktSumByRamda(someCalculation)
 }
 
 export function lazySeqRamdaImpl(arr) {
@@ -88,6 +87,5 @@ export function lazySeqRamdaImpl(arr) {
     .ktAsSequenceRamdaImpl()
     .mapNotNull(someTransform)
     .distinct()
-    .map(someCalculation)
-    .sum()
+    .sumBy(someCalculation)
 }

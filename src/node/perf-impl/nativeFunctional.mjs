@@ -1,48 +1,54 @@
 import {
-  mapNotNullReducer,
+  mapNotNullReduceOp,
   someCalculation,
   someNumIsNotNull,
   someTransform,
-  sumReducer,
+  sumByReduceOp,
+  sumReduceOp,
 } from './common.mjs'
 
-Array.prototype.ktMapNotNullNativeMapFilter = function (transform) {
-  return this.reduce(mapNotNullReducer(transform), [])
+Array.prototype.ktMapNotNullNative = function (transform) {
+  return this.reduce(mapNotNullReduceOp(transform), [])
 }
 
-Array.prototype.ktSumNativeReduce = function () {
-  return this.reduce(sumReducer, 0)
+Array.prototype.ktSumByNative = function (selector) {
+  return this.reduce(sumByReduceOp(selector), 0)
 }
 
-Array.prototype.ktDistinctNativeFilter = function () {
-  return Array.from(this.reduce((acc, e) => acc.add(e), new Set()))
+Array.prototype.ktDistinctNative = function () {
+  return Array.from(new Set(this))
 }
+
+export function nativeReduceImperative(arr) {
+  return Array.from(
+    arr.reduce((acc, e) => {
+      const transformed = someTransform(e)
+      if (transformed !== null) {
+        acc.add(someCalculation(transformed))
+      }
+      return acc
+    }, new Set()),
+  ).reduce(sumReduceOp, 0)
+}
+
+const uniqArr = (arr) => Array.from(new Set(arr))
 
 export function nativeFunctionalOperator(arr) {
-  return Array.from(
-    arr
-      .filter(someNumIsNotNull)
-      .map(someTransform)
-      .reduce((acc, e) => acc.add(e), new Set()),
-  )
+  return uniqArr(arr.filter(someNumIsNotNull).map(someTransform))
     .map(someCalculation)
-    .reduce(sumReducer, 0)
+    .reduce(sumReduceOp, 0)
 }
 
 export function nativeFunctionalOperatorOpti(arr) {
-  return Array.from(
-    arr
-      .reduce(mapNotNullReducer(someTransform), [])
-      .reduce((acc, e) => acc.add(e), new Set()),
+  return uniqArr(arr.reduce(mapNotNullReduceOp(someTransform), [])).reduce(
+    sumByReduceOp(someCalculation),
+    0,
   )
-    .map(someCalculation)
-    .reduce(sumReducer, 0)
 }
 
 export function arrayExtensionNativeFunctionalOperator(arr) {
   return arr
-    .ktMapNotNullNativeMapFilter(someTransform)
-    .ktDistinctNativeFilter()
-    .map(someCalculation)
-    .ktSumNativeReduce()
+    .ktMapNotNullNative(someTransform)
+    .ktDistinctNative()
+    .ktSumByNative(someCalculation)
 }

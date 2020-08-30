@@ -1,7 +1,7 @@
 import _ from 'lodash'
 import fp from 'lodash/fp.js'
 import {
-  mapNotNullReducer,
+  mapNotNullReduceOp,
   someCalculation,
   someNumIsNotNull,
   someTransform,
@@ -12,8 +12,8 @@ class KtSeqLodashImpl {
     this.wrapped = wrapped
     this.fns = []
   }
-  sum() {
-    this.fns.push(fp.reduce((acc, e) => acc + e, 0))
+  sumBy(selector) {
+    this.fns.push(fp.sumBy(selector))
     return fp.pipe(this.fns)(this.wrapped)
   }
 
@@ -28,7 +28,7 @@ class KtSeqLodashImpl {
   }
 
   mapNotNull(transform) {
-    this.fns.push(fp.reduce(mapNotNullReducer(transform), []))
+    this.fns.push(fp.reduce(mapNotNullReduceOp(transform), []))
     return this
   }
 
@@ -43,11 +43,11 @@ Array.prototype.ktAsSequenceLodashImpl = function () {
 }
 
 Array.prototype.ktMapNotNullLodash = function (transform) {
-  return fp.pipe(fp.reduce(mapNotNullReducer(transform), []))(this)
+  return fp.pipe(fp.reduce(mapNotNullReduceOp(transform), []))(this)
 }
 
-Array.prototype.ktSumLodash = function () {
-  return _.sum(this)
+Array.prototype.ktSumByLodash = function (selector) {
+  return _.sumBy(this, selector)
 }
 
 Array.prototype.ktDistinctLodash = function () {
@@ -55,25 +55,16 @@ Array.prototype.ktDistinctLodash = function () {
 }
 
 export function lodashOneByOne(arr) {
-  return _.sum(
-    _.map(
-      _.uniq(
-        _.map(
-          _.filter(arr, (it) => someNumIsNotNull(it)),
-          someTransform,
-        ),
-      ),
-      someCalculation,
-    ),
+  return _.sumBy(
+    _.uniq(_.map(_.filter(arr, someNumIsNotNull), someTransform)),
+    someCalculation,
   )
 }
 
 export function lodashOneByOneOpti(arr) {
-  return _.sum(
-    _.map(
-      _.uniq(_.reduce(arr, mapNotNullReducer(someTransform), [])),
-      someCalculation,
-    ),
+  return _.sumBy(
+    _.uniq(_.reduce(arr, mapNotNullReduceOp(someTransform), [])),
+    someCalculation,
   )
 }
 
@@ -82,17 +73,15 @@ export function lodashLazyChain(arr) {
     .filter(someNumIsNotNull)
     .map(someTransform)
     .uniq()
-    .map(someCalculation)
-    .sum()
+    .sumBy(someCalculation)
     .value()
 }
 
 export function lodashLazyChainOpti(arr) {
   return _.chain(arr)
-    .reduce(mapNotNullReducer(someTransform), [])
+    .reduce(mapNotNullReduceOp(someTransform), [])
     .uniq()
-    .map(someCalculation)
-    .sum()
+    .sumBy(someCalculation)
     .value()
 }
 
@@ -101,17 +90,15 @@ export function lodashFp(arr) {
     fp.filter(someNumIsNotNull),
     fp.map(someTransform),
     fp.uniq,
-    fp.map(someCalculation),
-    fp.sum,
+    fp.sumBy(someCalculation),
   )(arr)
 }
 
 export function lodashFpOpti(arr) {
   return fp.pipe(
-    fp.reduce(mapNotNullReducer(someTransform), []),
+    fp.reduce(mapNotNullReduceOp(someTransform), []),
     fp.uniq,
-    fp.map(someCalculation),
-    fp.sum,
+    fp.sumBy(someCalculation),
   )(arr)
 }
 
@@ -120,7 +107,7 @@ export function arrayExtensionLodash(arr) {
     .ktMapNotNullLodash(someTransform)
     .ktDistinctLodash()
     .map(someCalculation)
-    .ktSumLodash()
+    .ktSumByLodash()
 }
 
 export function lazySeqLodashImpl(arr) {
@@ -128,6 +115,5 @@ export function lazySeqLodashImpl(arr) {
     .ktAsSequenceLodashImpl()
     .mapNotNull(someTransform)
     .distinct()
-    .map(someCalculation)
-    .sum()
+    .sumBy(someCalculation)
 }
