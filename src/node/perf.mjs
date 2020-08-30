@@ -51,61 +51,61 @@ assert.ok(lazySeqNativeImpl(arr) === ans)
 const suite = new Benchmark.Suite('Standard Array Processing')
 // add tests
 suite
-  .add(`native-ideal-while`, function () {
+  .add('native-ideal-while', function () {
     nativeIdeal(arr)
   })
-  .add(`native-standard-for-loop`, function () {
+  .add('native-standard-for-loop', function () {
     nativeStandard(arr)
   })
-  .add(`native-fp-operator`, function () {
+  .add('native-fp', function () {
     nativeFunctionalOperator(arr)
   })
-  .add(`native-rp-operator-optimized`, function () {
+  .add('native-fp-optimized', function () {
     nativeFunctionalOperatorOpti(arr)
   })
-  .add(`lodash-one-by-one`, function () {
+  .add('lodash-one-by-one', function () {
     lodashOneByOne(arr)
   })
-  .add(`lodash-one-by-one-optimized`, function () {
+  .add('lodash-one-by-one-optimized', function () {
     lodashOneByOneOpti(arr)
   })
-  .add(`lodash-lazy-chain`, function () {
+  .add('lodash-lazy-chain', function () {
     lodashLazyChain(arr)
   })
-  .add(`lodash-lazy-chain-optimized`, function () {
+  .add('lodash-lazy-chain-optimized', function () {
     lodashLazyChainOpti(arr)
   })
-  .add(`lodash-fp`, function () {
+  .add('lodash-fp', function () {
     lodashFp(arr)
   })
-  .add(`lodash-fp-optimized`, function () {
+  .add('lodash-fp-optimized', function () {
     lodashFpOpti(arr)
   })
-  .add(`ramda-pipe`, function () {
+  .add('ramda', function () {
     ramdaPipe(arr)
   })
-  .add(`ramda-pipe-optimized`, function () {
+  .add('ramda-optimized', function () {
     ramdaPipeOpti(arr)
   })
-  .add(`array-ext-native`, function () {
+  .add('array-ext-native', function () {
     arrayExtensionNative(arr)
   })
-  .add(`array-ext-native-fp-operator-optimized`, function () {
+  .add('array-ext-native-fp-optimized', function () {
     arrayExtensionNativeFunctionalOperator(arr)
   })
-  .add(`array-ext-lodash-optimized`, function () {
+  .add('array-ext-lodash-optimized', function () {
     arrayExtensionLodash(arr)
   })
-  .add(`array-ext-ramda-optimized`, function () {
+  .add('array-ext-ramda-optimized', function () {
     arrayExtensionRamda(arr)
   })
-  .add(`lazy-sequence-native`, function () {
+  .add('lazy-sequence-native', function () {
     lazySeqNativeImpl(arr)
   })
-  .add(`lazy-sequence-lodash-optimized`, function () {
+  .add('lazy-sequence-lodash-optimized', function () {
     lazySeqLodashImpl(arr)
   })
-  .add(`lazy-sequence-ramda-optimized`, function () {
+  .add('lazy-sequence-ramda-optimized', function () {
     lazySeqRamdaImpl(arr)
   })
   // add listeners

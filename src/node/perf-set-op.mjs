@@ -25,50 +25,50 @@ function checkUniqAndAddIfNotExsit2(set, value) {
 }
 
 setOperationSuite
-  .add(`how fast is new Set(set)?`, function () {
+  .add('how fast is new Set(set)?', function () {
     new Set(numberSet)
   })
   .add(
-    `[Num].add(value) whatever and compare size, non-exist-element`,
+    '[Num].add(value) whatever and compare size, non-exist-element',
     function () {
       checkUniqAndAddIfNotExsit(new Set(numberSet), -1)
     },
   )
   .add(
-    `[Num].has(value) first and add if needed, non-exist-element`,
+    '[Num].has(value) first and add if needed, non-exist-element',
     function () {
       checkUniqAndAddIfNotExsit2(new Set(numberSet), -1)
     },
   )
   .add(
-    `[Num].add(value) whatever and compare size, exist-element`,
+    '[Num].add(value) whatever and compare size, exist-element',
     function () {
       checkUniqAndAddIfNotExsit(new Set(numberSet), 0)
     },
   )
-  .add(`[Num].has(value) first and add if needed, exist-element`, function () {
+  .add('[Num].has(value) first and add if needed, exist-element', function () {
     checkUniqAndAddIfNotExsit2(new Set(numberSet), 0)
   })
   .add(
-    `[String].add(value) whatever and compare size, non-exist-element`,
+    '[String].add(value) whatever and compare size, non-exist-element',
     function () {
       checkUniqAndAddIfNotExsit(new Set(stringSet), '_-1')
     },
   )
   .add(
-    `[String].has(value) first and add if needed, non-exist-element`,
+    '[String].has(value) first and add if needed, non-exist-element',
     function () {
       checkUniqAndAddIfNotExsit2(new Set(stringSet), '_-1')
     },
   )
   .add(
-    `[String].add(value) whatever and compare size, exist-element`,
+    '[String].add(value) whatever and compare size, exist-element',
     function () {
       checkUniqAndAddIfNotExsit(new Set(stringSet), '_0')
     },
   )
   .add(
-    `[String].has(value) first and add if needed, exist-element`,
+    '[String].has(value) first and add if needed, exist-element',
     function () {
       checkUniqAndAddIfNotExsit2(new Set(stringSet), '_0')
     },
