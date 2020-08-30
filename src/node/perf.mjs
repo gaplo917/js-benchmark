@@ -151,7 +151,7 @@ suite
       (it) => it.benchmark,
     )
 
-    fs.writeFileSync(resultPath, JSON.stringify(overwriteResult))
+    fs.writeFileSync(resultPath, JSON.stringify(overwriteResult, null, 2))
   })
   .on('complete', function () {
     console.log('Fastest is ' + this.filter('fastest').map('name'))
