@@ -29,9 +29,9 @@ class KtSeqNativeImpl {
         } else if (fn.__mode === 1) {
           value = fn.apply(value)
         } else if (fn.__mode === 2) {
-          if (!result) {
+          if (result === undefined) {
             // no initial value, use the first element
-            result = value
+            result = value || null
           } else {
             result = fn.apply(result, value)
           }
