@@ -48,6 +48,9 @@ assert.ok(lazySeqRamdaImpl(arr) === ans)
 assert.ok(lazySeqLodashImpl(arr) === ans)
 assert.ok(lazySeqNativeImpl(arr) === ans)
 
+Benchmark.options.initCount = 5
+Benchmark.options.minSamples = 50
+
 const suite = new Benchmark.Suite('Standard Array Processing')
 // add tests
 suite
