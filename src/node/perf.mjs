@@ -1,5 +1,8 @@
 import Benchmark from 'benchmark'
 import assert from 'assert'
+import path from 'path'
+import fs from 'fs'
+
 import {
   arrayExtensionNativeFunctionalOperator,
   nativeFunctionalOperator,
@@ -8,96 +11,139 @@ import {
 import {
   arrayExtensionLodash,
   lazySeqLodashImpl,
-  lodashChain,
-  lodashChainOpti,
   lodashFp,
+  lodashFpOpti,
+  lodashLazyChain,
+  lodashLazyChainOpti,
   lodashOneByOne,
+  lodashOneByOneOpti,
 } from './perf-impl/lodashImpl.mjs'
 import {
   arrayExtensionRamda,
   lazySeqRamdaImpl,
-  ramdaCompose,
-  ramdaComposeOpti,
+  ramdaPipe,
+  ramdaPipeOpti,
 } from './perf-impl/ramdaImpl.mjs'
-import { arrayExtensionRaw, lazySeqRawImpl } from './perf-impl/raw.mjs'
-import { ideal } from './perf-impl/ideal.mjs'
-import { arrSize } from './perf-impl/common.mjs'
-const suite = new Benchmark.Suite()
+import { arrayExtensionNative, lazySeqNativeImpl } from './perf-impl/raw.mjs'
+import { nativeIdeal, nativeStandard } from './perf-impl/nativeIdeal.mjs'
+import { arr, arrSize } from './perf-impl/common.mjs'
 
-const ans = ideal()
-assert.ok(ideal() === ans)
-assert.ok(nativeFunctionalOperator() === ans)
-assert.ok(nativeFunctionalOperatorOpti() === ans)
-assert.ok(lodashOneByOne() === ans)
-assert.ok(lodashChain() === ans)
-assert.ok(lodashChainOpti() === ans)
-assert.ok(lodashFp() === ans)
-assert.ok(ramdaCompose() === ans)
-assert.ok(ramdaComposeOpti() === ans)
-assert.ok(arrayExtensionRaw() === ans)
-assert.ok(arrayExtensionNativeFunctionalOperator() === ans)
-assert.ok(arrayExtensionLodash() === ans)
-assert.ok(arrayExtensionRamda() === ans)
-assert.ok(lazySeqRamdaImpl() === ans)
-assert.ok(lazySeqLodashImpl() === ans)
-assert.ok(lazySeqRawImpl() === ans)
+const ans = nativeStandard(arr)
+assert.ok(nativeIdeal(arr) === ans)
+assert.ok(nativeFunctionalOperator(arr) === ans)
+assert.ok(nativeFunctionalOperatorOpti(arr) === ans)
+assert.ok(lodashOneByOne(arr) === ans)
+assert.ok(lodashOneByOneOpti(arr) === ans)
+assert.ok(lodashLazyChain(arr) === ans)
+assert.ok(lodashLazyChainOpti(arr) === ans)
+assert.ok(lodashFp(arr) === ans)
+assert.ok(lodashFpOpti(arr) === ans)
+assert.ok(ramdaPipe(arr) === ans)
+assert.ok(ramdaPipeOpti(arr) === ans)
+assert.ok(arrayExtensionNative(arr) === ans)
+assert.ok(arrayExtensionNativeFunctionalOperator(arr) === ans)
+assert.ok(arrayExtensionLodash(arr) === ans)
+assert.ok(arrayExtensionRamda(arr) === ans)
+assert.ok(lazySeqRamdaImpl(arr) === ans)
+assert.ok(lazySeqLodashImpl(arr) === ans)
+assert.ok(lazySeqNativeImpl(arr) === ans)
 
+const suite = new Benchmark.Suite('Standard Array Processing')
 // add tests
 suite
-  .add(`ideal`, function () {
-    ideal()
+  .add(`native-ideal-while`, function () {
+    nativeIdeal(arr)
   })
-  .add(`nativeFunctionalOperator`, function () {
-    nativeFunctionalOperator()
+  .add(`native-standard-for-loop`, function () {
+    nativeStandard(arr)
   })
-  .add(`nativeFunctionalOperatorOpti`, function () {
-    nativeFunctionalOperatorOpti()
+  .add(`native-fp-operator`, function () {
+    nativeFunctionalOperator(arr)
   })
-  .add(`lodashOneByOne`, function () {
-    lodashOneByOne()
+  .add(`native-rp-operator-optimized`, function () {
+    nativeFunctionalOperatorOpti(arr)
   })
-  .add(`lodashChain`, function () {
-    lodashChain()
+  .add(`lodash-one-by-one`, function () {
+    lodashOneByOne(arr)
   })
-  .add(`lodashChainOpti`, function () {
-    lodashChainOpti()
+  .add(`lodash-one-by-one-optimized`, function () {
+    lodashOneByOneOpti(arr)
   })
-  .add(`lodashFp`, function () {
-    lodashFp()
+  .add(`lodash-lazy-chain`, function () {
+    lodashLazyChain(arr)
   })
-  .add(`ramdaCompose`, function () {
-    ramdaCompose()
+  .add(`lodash-lazy-chain-optimized`, function () {
+    lodashLazyChainOpti(arr)
   })
-  .add(`ramdaComposeOpti`, function () {
-    ramdaComposeOpti()
+  .add(`lodash-fp`, function () {
+    lodashFp(arr)
   })
-  .add(`arrayExtensionRaw`, function () {
-    arrayExtensionRaw()
+  .add(`lodash-fp-optimized`, function () {
+    lodashFpOpti(arr)
   })
-  .add(`arrayExtensionNativeFunctionalOperator`, function () {
-    arrayExtensionNativeFunctionalOperator()
+  .add(`ramda-pipe`, function () {
+    ramdaPipe(arr)
   })
-  .add(`arrayExtensionLodashImpl`, function () {
-    arrayExtensionLodash()
+  .add(`ramda-pipe-optimized`, function () {
+    ramdaPipeOpti(arr)
   })
-  .add(`arrayExtensionRamdaImpl`, function () {
-    arrayExtensionRamda()
+  .add(`array-ext-native`, function () {
+    arrayExtensionNative(arr)
   })
-  .add(`lazySeqRawImpl`, function () {
-    lazySeqRawImpl()
+  .add(`array-ext-native-fp-operator-optimized`, function () {
+    arrayExtensionNativeFunctionalOperator(arr)
   })
-  .add(`lazySeqLodashImpl`, function () {
-    lazySeqLodashImpl()
+  .add(`array-ext-lodash-optimized`, function () {
+    arrayExtensionLodash(arr)
   })
-  .add(`lazySeqRamdaImpl`, function () {
-    lazySeqRamdaImpl()
+  .add(`array-ext-ramda-optimized`, function () {
+    arrayExtensionRamda(arr)
+  })
+  .add(`lazy-sequence-native`, function () {
+    lazySeqNativeImpl(arr)
+  })
+  .add(`lazy-sequence-lodash-optimized`, function () {
+    lazySeqLodashImpl(arr)
+  })
+  .add(`lazy-sequence-ramda-optimized`, function () {
+    lazySeqRamdaImpl(arr)
   })
   // add listeners
   .on('start', function () {
-    console.log(`Starting ARR_SIZE=${arrSize} benchmark`)
+    console.log(`${this.name} ARR_SIZE=${arrSize}`)
   })
   .on('cycle', function (event) {
-    console.log(String(event.target))
+    const currentBench = event.target
+    const benchName = currentBench.name
+
+    console.log(String(currentBench))
+
+    const outputDir = path.resolve('./benchmark')
+    const resultPath = `${outputDir}/result.json`
+    const result = JSON.parse(
+      String(fs.readFileSync(resultPath, { encoding: 'utf-8' })),
+    )
+
+    const record = result.find((it) => it.benchmark === benchName) || {
+      benchmark: null,
+      results: [],
+    }
+
+    const filteredResults = record.results.filter((it) => it.size !== arrSize)
+
+    const overwriteRecord = {
+      ...record,
+      results: [...filteredResults, { size: arrSize, hz: currentBench.hz }],
+      benchmark: benchName,
+    }
+
+    const filtered = result.filter((it) => it.benchmark !== benchName)
+
+    const overwriteResult = [...filtered, overwriteRecord].sort(
+      (it) => it.benchmark,
+    )
+
+    fs.writeFileSync(resultPath, JSON.stringify(overwriteResult))
   })
   .on('complete', function () {
     console.log('Fastest is ' + this.filter('fastest').map('name'))

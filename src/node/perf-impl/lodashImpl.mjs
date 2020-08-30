@@ -1,7 +1,6 @@
 import _ from 'lodash'
 import fp from 'lodash/fp.js'
 import {
-  arr,
   mapNotNullReducer,
   someCalculation,
   someNumIsNotNull,
@@ -56,13 +55,21 @@ Array.prototype.ktDistinctLodash = function () {
 }
 
 export const calSumLodashFp = fp.pipe(
+  fp.filter(someNumIsNotNull),
+  fp.map(someTransform),
+  fp.uniq,
+  fp.map(someCalculation),
+  fp.sum,
+)
+
+export const calSumLodashFpOpti = fp.pipe(
   fp.reduce(mapNotNullReducer(someTransform), []),
   fp.uniq,
   fp.map(someCalculation),
   fp.sum,
 )
 
-export function lodashOneByOne() {
+export function lodashOneByOne(arr) {
   return _.sum(
     _.map(
       _.uniq(
@@ -76,7 +83,16 @@ export function lodashOneByOne() {
   )
 }
 
-export function lodashChain() {
+export function lodashOneByOneOpti(arr) {
+  return _.sum(
+    _.map(
+      _.uniq(_.reduce(arr, mapNotNullReducer(someTransform), [])),
+      someCalculation,
+    ),
+  )
+}
+
+export function lodashLazyChain(arr) {
   return _.chain(arr)
     .filter(someNumIsNotNull)
     .map(someTransform)
@@ -86,7 +102,7 @@ export function lodashChain() {
     .value()
 }
 
-export function lodashChainOpti() {
+export function lodashLazyChainOpti(arr) {
   return _.chain(arr)
     .reduce(mapNotNullReducer(someTransform), [])
     .uniq()
@@ -95,11 +111,15 @@ export function lodashChainOpti() {
     .value()
 }
 
-export function lodashFp() {
+export function lodashFp(arr) {
   return calSumLodashFp(arr)
 }
 
-export function arrayExtensionLodash() {
+export function lodashFpOpti(arr) {
+  return calSumLodashFpOpti(arr)
+}
+
+export function arrayExtensionLodash(arr) {
   return arr
     .ktMapNotNullLodash(someTransform)
     .ktDistinctLodash()
@@ -107,7 +127,7 @@ export function arrayExtensionLodash() {
     .ktSumLodash()
 }
 
-export function lazySeqLodashImpl() {
+export function lazySeqLodashImpl(arr) {
   return arr
     .ktAsSequenceLodashImpl()
     .mapNotNull(someTransform)

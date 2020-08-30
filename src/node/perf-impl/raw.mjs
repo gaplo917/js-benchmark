@@ -1,11 +1,10 @@
 import {
-  arr,
   isNotNullPredicate,
   someCalculation,
   someTransform,
 } from './common.mjs'
 
-class KtSeqRawImpl {
+class KtSeqNativeImpl {
   constructor(wrapped) {
     this.wrapped = wrapped
     this.fns = []
@@ -91,10 +90,10 @@ class KtSeqRawImpl {
 }
 
 Array.prototype.ktAsSequenceRawImpl = function () {
-  return new KtSeqRawImpl(this)
+  return new KtSeqNativeImpl(this)
 }
 
-Array.prototype.ktFilterNotNullRaw = function () {
+Array.prototype.ktFilterNotNullNative = function () {
   const result = []
   for (let i = 0, len = this.length; i < len; i++) {
     const e = this[i]
@@ -105,7 +104,7 @@ Array.prototype.ktFilterNotNullRaw = function () {
   return result
 }
 
-Array.prototype.ktMapNotNullRaw = function (transform) {
+Array.prototype.ktMapNotNullNative = function (transform) {
   const result = []
   for (let i = 0, len = this.length; i < len; i++) {
     const e = transform(this[i])
@@ -138,15 +137,15 @@ Array.prototype.ktSumRaw = function () {
   return sum
 }
 
-export function arrayExtensionRaw() {
+export function arrayExtensionNative(arr) {
   return arr
-    .ktMapNotNullRaw(someTransform)
+    .ktMapNotNullNative(someTransform)
     .ktDistinctRaw()
     .map(someCalculation)
     .ktSumRaw()
 }
 
-export function lazySeqRawImpl() {
+export function lazySeqNativeImpl(arr) {
   return arr
     .ktAsSequenceRawImpl()
     .mapNotNull(someTransform)

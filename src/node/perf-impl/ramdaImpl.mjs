@@ -1,7 +1,6 @@
 import R from 'ramda'
 
 import {
-  arr,
   mapNotNullReducer,
   someCalculation,
   someNumIsNotNull,
@@ -15,6 +14,8 @@ class KtSeqRamdaImpl {
   }
   sum() {
     this.fns.push(R.sum)
+    // sosad, R.pipe not accept array value, but `fns` size is very small that is negligible in large array size
+    // but it is shameful to write in this way.
     return R.pipe(...this.fns)(this.wrapped)
   }
 
@@ -55,31 +56,6 @@ Array.prototype.ktDistinctRamda = function () {
   return R.uniq(this)
 }
 
-export function ramdaCompose() {
-  return calSumR(arr)
-}
-
-export function ramdaComposeOpti() {
-  return calSumROpti(arr)
-}
-
-export function arrayExtensionRamda() {
-  return arr
-    .ktMapNotNullRamda(someTransform)
-    .ktDistinctRamda()
-    .map(someCalculation)
-    .ktSumRamda()
-}
-
-export function lazySeqRamdaImpl() {
-  return arr
-    .ktAsSequenceRamdaImpl()
-    .mapNotNull(someTransform)
-    .distinct()
-    .map(someCalculation)
-    .sum()
-}
-
 const calSumR = R.pipe(
   R.filter(someNumIsNotNull),
   R.map(someTransform),
@@ -88,9 +64,34 @@ const calSumR = R.pipe(
   R.sum,
 )
 
+export function ramdaPipe(arr) {
+  return calSumR(arr)
+}
+
 const calSumROpti = R.pipe(
   R.reduce(mapNotNullReducer(someTransform), []),
   R.uniq,
   R.map(someCalculation),
   R.sum,
 )
+
+export function ramdaPipeOpti(arr) {
+  return calSumROpti(arr)
+}
+
+export function arrayExtensionRamda(arr) {
+  return arr
+    .ktMapNotNullRamda(someTransform)
+    .ktDistinctRamda()
+    .map(someCalculation)
+    .ktSumRamda()
+}
+
+export function lazySeqRamdaImpl(arr) {
+  return arr
+    .ktAsSequenceRamdaImpl()
+    .mapNotNull(someTransform)
+    .distinct()
+    .map(someCalculation)
+    .sum()
+}

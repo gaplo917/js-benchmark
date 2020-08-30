@@ -1,5 +1,4 @@
 import {
-  arr,
   mapNotNullReducer,
   someCalculation,
   someNumIsNotNull,
@@ -19,7 +18,7 @@ Array.prototype.ktDistinctNativeFilter = function () {
   return Array.from(this.reduce((acc, e) => acc.add(e), new Set()))
 }
 
-export function nativeFunctionalOperator() {
+export function nativeFunctionalOperator(arr) {
   return Array.from(
     arr
       .filter(someNumIsNotNull)
@@ -30,7 +29,7 @@ export function nativeFunctionalOperator() {
     .reduce(sumReducer, 0)
 }
 
-export function nativeFunctionalOperatorOpti() {
+export function nativeFunctionalOperatorOpti(arr) {
   return Array.from(
     arr
       .reduce(mapNotNullReducer(someTransform), [])
@@ -40,7 +39,7 @@ export function nativeFunctionalOperatorOpti() {
     .reduce(sumReducer, 0)
 }
 
-export function arrayExtensionNativeFunctionalOperator() {
+export function arrayExtensionNativeFunctionalOperator(arr) {
   return arr
     .ktMapNotNullNativeMapFilter(someTransform)
     .ktDistinctNativeFilter()
