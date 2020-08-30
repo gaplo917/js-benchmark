@@ -56,27 +56,23 @@ Array.prototype.ktDistinctRamda = function () {
   return R.uniq(this)
 }
 
-const calSumR = R.pipe(
-  R.filter(someNumIsNotNull),
-  R.map(someTransform),
-  R.uniq,
-  R.map(someCalculation),
-  R.sum,
-)
-
 export function ramdaPipe(arr) {
-  return calSumR(arr)
+  return R.pipe(
+    R.filter(someNumIsNotNull),
+    R.map(someTransform),
+    R.uniq,
+    R.map(someCalculation),
+    R.sum,
+  )(arr)
 }
 
-const calSumROpti = R.pipe(
-  R.reduce(mapNotNullReducer(someTransform), []),
-  R.uniq,
-  R.map(someCalculation),
-  R.sum,
-)
-
 export function ramdaPipeOpti(arr) {
-  return calSumROpti(arr)
+  return R.pipe(
+    R.reduce(mapNotNullReducer(someTransform), []),
+    R.uniq,
+    R.map(someCalculation),
+    R.sum,
+  )(arr)
 }
 
 export function arrayExtensionRamda(arr) {

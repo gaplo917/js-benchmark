@@ -24,7 +24,7 @@ import {
   ramdaPipe,
   ramdaPipeOpti,
 } from './perf-impl/ramdaImpl.mjs'
-import { arrayExtensionNative, lazySeqNativeImpl } from './perf-impl/raw.mjs'
+import { arrayExtensionNative, lazySeqNativeImpl } from './perf-impl/native.mjs'
 import { nativeIdeal, nativeStandard } from './perf-impl/nativeIdeal.mjs'
 import { arr, arrSize } from './perf-impl/common.mjs'
 

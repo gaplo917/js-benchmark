@@ -54,21 +54,6 @@ Array.prototype.ktDistinctLodash = function () {
   return _.uniq(this)
 }
 
-export const calSumLodashFp = fp.pipe(
-  fp.filter(someNumIsNotNull),
-  fp.map(someTransform),
-  fp.uniq,
-  fp.map(someCalculation),
-  fp.sum,
-)
-
-export const calSumLodashFpOpti = fp.pipe(
-  fp.reduce(mapNotNullReducer(someTransform), []),
-  fp.uniq,
-  fp.map(someCalculation),
-  fp.sum,
-)
-
 export function lodashOneByOne(arr) {
   return _.sum(
     _.map(
@@ -112,11 +97,22 @@ export function lodashLazyChainOpti(arr) {
 }
 
 export function lodashFp(arr) {
-  return calSumLodashFp(arr)
+  return fp.pipe(
+    fp.filter(someNumIsNotNull),
+    fp.map(someTransform),
+    fp.uniq,
+    fp.map(someCalculation),
+    fp.sum,
+  )(arr)
 }
 
 export function lodashFpOpti(arr) {
-  return calSumLodashFpOpti(arr)
+  return fp.pipe(
+    fp.reduce(mapNotNullReducer(someTransform), []),
+    fp.uniq,
+    fp.map(someCalculation),
+    fp.sum,
+  )(arr)
 }
 
 export function arrayExtensionLodash(arr) {

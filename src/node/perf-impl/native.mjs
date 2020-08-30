@@ -2,6 +2,7 @@ import {
   isNotNullPredicate,
   someCalculation,
   someTransform,
+  sumReducer,
 } from './common.mjs'
 
 class KtSeqNativeImpl {
@@ -45,7 +46,7 @@ class KtSeqNativeImpl {
   sum() {
     this.fns.push({
       __mode: 2,
-      apply: (acc, e) => acc + e,
+      apply: sumReducer,
       initial: 0,
     })
     return this.resolve()
@@ -89,7 +90,7 @@ class KtSeqNativeImpl {
   }
 }
 
-Array.prototype.ktAsSequenceRawImpl = function () {
+Array.prototype.ktAsSequenceNativeImpl = function () {
   return new KtSeqNativeImpl(this)
 }
 
@@ -115,7 +116,7 @@ Array.prototype.ktMapNotNullNative = function (transform) {
   return result
 }
 
-Array.prototype.ktDistinctRaw = function () {
+Array.prototype.ktDistinctNative = function () {
   const set = new Set()
   const result = []
   for (let i = 0, len = this.length; i < len; i++) {
@@ -129,7 +130,7 @@ Array.prototype.ktDistinctRaw = function () {
   return result
 }
 
-Array.prototype.ktSumRaw = function () {
+Array.prototype.ktSumNative = function () {
   let sum = 0
   for (let i = 0, len = this.length; i < len; i++) {
     sum += this[i]
@@ -140,14 +141,14 @@ Array.prototype.ktSumRaw = function () {
 export function arrayExtensionNative(arr) {
   return arr
     .ktMapNotNullNative(someTransform)
-    .ktDistinctRaw()
+    .ktDistinctNative()
     .map(someCalculation)
-    .ktSumRaw()
+    .ktSumNative()
 }
 
 export function lazySeqNativeImpl(arr) {
   return arr
-    .ktAsSequenceRawImpl()
+    .ktAsSequenceNativeImpl()
     .mapNotNull(someTransform)
     .distinct()
     .map(someCalculation)
