@@ -46,12 +46,12 @@ assert.ok(arrayExtensionNative(arr) === ans)
 assert.ok(arrayExtensionNativeFunctionalOperator(arr) === ans)
 assert.ok(arrayExtensionLodash(arr) === ans)
 assert.ok(arrayExtensionRamda(arr) === ans)
-assert.ok(lazySeqRamdaImpl(arr) === ans)
-assert.ok(lazySeqLodashImpl(arr) === ans)
 assert.ok(lazySeqNativeImpl(arr) === ans)
+assert.ok(lazySeqLodashImpl(arr) === ans)
+assert.ok(lazySeqRamdaImpl(arr) === ans)
 
 Benchmark.options.initCount = 5
-Benchmark.options.minSamples = 50
+Benchmark.options.minSamples = process.env.MIN_SAMPLE || 200
 
 const suite = new Benchmark.Suite('Standard Array Processing')
 // add tests

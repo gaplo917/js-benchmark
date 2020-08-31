@@ -1,90 +1,86 @@
-import {
-  isNotNullPredicate,
-  someCalculation,
-  someTransform,
-  sumByReduceOp,
-  sumReduceOp,
-} from './common.mjs'
+import { someCalculation, someTransform } from './common.mjs'
 
+// standard native iterator approach
 class KtSeqNativeImpl {
-  constructor(wrapped) {
-    this.wrapped = wrapped
-    this.fns = []
+  constructor(seq) {
+    this.seq = seq
   }
 
-  resolve() {
-    // assume the final functions must be an aggregation
-    let result = this.fns[this.fns.length - 1].initial
-    for (let i = 0, len = this.wrapped.length; i < len; i++) {
-      let value = this.wrapped[i]
-      for (let j = 0, len2 = this.fns.length; j < len2; j++) {
-        const fn = this.fns[j]
-        // 0:filter, 1: transform, 2:aggregate
-        if (fn.__mode === 0) {
-          if (!fn.apply(value)) {
-            // if filtered, then all sub-sequence fn don't need to apply
-            // break the for-function-loop
-            break
-          }
-        } else if (fn.__mode === 1) {
-          value = fn.apply(value)
-        } else if (fn.__mode === 2) {
-          if (result === undefined) {
-            // no initial value, use the first element
-            result = value || null
-          } else {
-            result = fn.apply(result, value)
-          }
-        }
-      }
-    }
-    return result
+  [Symbol.iterator]() {
+    return this.seq[Symbol.iterator]()
   }
 
   sumBy(selector) {
-    this.fns.push({
-      __mode: 2,
-      apply: sumByReduceOp(selector),
-      initial: 0,
-    })
-    return this.resolve()
-  }
-
-  map(transform) {
-    this.fns.push({
-      __mode: 1,
-      apply: transform,
-    })
-    return this
-  }
-
-  filterNotNull() {
-    this.fns.push({
-      __mode: 0,
-      apply: isNotNullPredicate,
-    })
-    return this
+    const iterator = this[Symbol.iterator]()
+    let sum = 0
+    let result = iterator.next()
+    while (!result.done) {
+      sum += selector(result.value)
+      result = iterator.next()
+    }
+    return sum
   }
 
   mapNotNull(transform) {
-    this.fns.push({
-      __mode: 1,
-      apply: transform,
-    })
-    return this.filterNotNull()
+    return new V3MapNotNullSeq(this, transform)
   }
 
   distinct() {
-    const set = new Set()
-    this.fns.push({
-      __mode: 0,
-      apply: (t) => {
-        const oriSize = set.size
-        set.add(t)
-        return oriSize !== set.size
+    return new V3DistinctSeq(this)
+  }
+}
+
+class V3MapNotNullSeq extends KtSeqNativeImpl {
+  constructor(seq, transform) {
+    super(seq)
+    this.transform = transform
+  }
+
+  [Symbol.iterator]() {
+    const iterator = this.seq[Symbol.iterator]()
+    const transform = this.transform
+
+    return {
+      next: function () {
+        let result = iterator.next()
+
+        while (!result.done) {
+          let applied = transform(result.value)
+          if (applied !== null) {
+            return { value: applied, done: false }
+          }
+          result = iterator.next()
+        }
+        return { done: true }
       },
-    })
-    return this
+    }
+  }
+}
+
+class V3DistinctSeq extends KtSeqNativeImpl {
+  constructor(seq) {
+    super(seq)
+  }
+  [Symbol.iterator]() {
+    const cacheSet = new Set()
+    const iterator = this.seq[Symbol.iterator]()
+
+    return {
+      next: function () {
+        let result = iterator.next()
+        while (!result.done) {
+          let oriSize = cacheSet.size
+          cacheSet.add(result.value)
+
+          if (oriSize !== cacheSet.size) {
+            return { value: result.value, done: false }
+          } else {
+            result = iterator.next()
+          }
+        }
+        return { done: true }
+      },
+    }
   }
 }
 
