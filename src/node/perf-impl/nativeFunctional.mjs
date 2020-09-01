@@ -16,6 +16,7 @@ Array.prototype.ktSumByNative = function (selector) {
 }
 
 Array.prototype.ktDistinctNative = function () {
+  // choose from perf-set-op.mjs
   return Array.from(new Set(this))
 }
 
@@ -24,11 +25,11 @@ export function nativeReduceImperative(arr) {
     arr.reduce((acc, e) => {
       const transformed = someTransform(e)
       if (transformed !== null) {
-        acc.add(someCalculation(transformed))
+        acc.add(transformed)
       }
       return acc
     }, new Set()),
-  ).reduce(sumReduceOp, 0)
+  ).reduce(sumByReduceOp(someCalculation), 0)
 }
 
 const uniqArr = (arr) => Array.from(new Set(arr))
