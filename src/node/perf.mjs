@@ -1,5 +1,4 @@
 import Benchmark from 'benchmark'
-import assert from 'assert'
 import path from 'path'
 import fs from 'fs'
 
@@ -29,29 +28,8 @@ import { arrayExtensionNative, lazySeqNativeImpl } from './perf-impl/native.mjs'
 import { ideal, nativeStandard } from './perf-impl/ideal.mjs'
 import { arr, arrSize } from './perf-impl/common.mjs'
 
-const ans = nativeStandard(arr)
-assert.strictEqual(ideal(arr), ans)
-assert.strictEqual(nativeReduceImperative(arr), ans)
-assert.strictEqual(nativeFunctionalOperator(arr), ans)
-assert.strictEqual(nativeFunctionalOperatorOpti(arr), ans)
-assert.strictEqual(lodashOneByOne(arr), ans)
-assert.strictEqual(lodashOneByOneOpti(arr), ans)
-assert.strictEqual(lodashLazyChain(arr), ans)
-assert.strictEqual(lodashLazyChainOpti(arr), ans)
-assert.strictEqual(lodashFp(arr), ans)
-assert.strictEqual(lodashFpOpti(arr), ans)
-assert.strictEqual(ramdaPipe(arr), ans)
-assert.strictEqual(ramdaPipeOpti(arr), ans)
-assert.strictEqual(arrayExtensionNative(arr), ans)
-assert.strictEqual(arrayExtensionNativeFunctionalOperator(arr), ans)
-assert.strictEqual(arrayExtensionLodash(arr), ans)
-assert.strictEqual(arrayExtensionRamda(arr), ans)
-assert.strictEqual(lazySeqNativeImpl(arr), ans)
-assert.strictEqual(lazySeqLodashImpl(arr), ans)
-assert.strictEqual(lazySeqRamdaImpl(arr), ans)
-
 Benchmark.options.initCount = 5
-Benchmark.options.minSamples = process.env.MIN_SAMPLE || 200
+Benchmark.options.minSamples = parseInt(process.env.MIN_SAMPLE) || 200
 
 const suite = new Benchmark.Suite('Standard Array Processing')
 // add tests
