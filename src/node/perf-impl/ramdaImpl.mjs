@@ -1,9 +1,9 @@
 import R from 'ramda'
 
 import {
+  isNotNullPredicate,
   mapNotNullReduceOp,
   someCalculation,
-  someNumIsNotNull,
   someTransform,
   sumByReduceOp,
 } from './common.mjs'
@@ -59,8 +59,8 @@ Array.prototype.ktDistinctRamda = function () {
 
 export function ramdaPipe(arr) {
   return R.pipe(
-    R.filter(someNumIsNotNull),
     R.map(someTransform),
+    R.filter(isNotNullPredicate),
     R.uniq,
     R.map(someCalculation),
     R.sum,

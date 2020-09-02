@@ -26,12 +26,25 @@ import {
 } from './perf-impl/ramdaImpl.mjs'
 import { arrayExtensionNative, lazySeqNativeImpl } from './perf-impl/native.mjs'
 import { ideal, nativeStandard } from './perf-impl/ideal.mjs'
-import { arr, arrSize } from './perf-impl/common.mjs'
+import { createArr } from './perf-impl/common.mjs'
 
-Benchmark.options.initCount = 5
-Benchmark.options.minSamples = parseInt(process.env.MIN_SAMPLE) || 200
+// Assume the arrSize are in [1, 10, 100, 1000, 10000, 100000, 1000000]
+const arrSize = parseInt(process.env.ARR_SIZE)
+const benchmarkInitCount = parseInt(process.env.INIT_COUNT) || 1
+const benchmarkMinSamples = parseInt(process.env.MIN_SAMPLE) || 10
 
-const suite = new Benchmark.Suite('Standard Array Processing')
+if (!arrSize) {
+  throw new Error('missing ARR_SIZE environment variable')
+}
+
+const arr = createArr(arrSize)
+
+Benchmark.options.initCount = benchmarkInitCount
+Benchmark.options.minSamples = benchmarkMinSamples
+
+const suite = new Benchmark.Suite(
+  `Standard Array Processing (size=${arrSize}, initCount=${benchmarkInitCount}, minSample=${benchmarkMinSamples})`,
+)
 // add tests
 suite
   .add('native-ideal-while', function () {
@@ -96,7 +109,7 @@ suite
   })
   // add listeners
   .on('start', function () {
-    console.log(`${this.name} ARR_SIZE=${arrSize}`)
+    console.log(this.name)
   })
   .on('cycle', function (event) {
     const currentBench = event.target

@@ -1,9 +1,9 @@
 import _ from 'lodash'
 import fp from 'lodash/fp.js'
 import {
+  isNotNullPredicate,
   mapNotNullReduceOp,
   someCalculation,
-  someNumIsNotNull,
   someTransform,
 } from './common.mjs'
 
@@ -56,7 +56,7 @@ Array.prototype.ktDistinctLodash = function () {
 
 export function lodashOneByOne(arr) {
   return _.sumBy(
-    _.uniq(_.map(_.filter(arr, someNumIsNotNull), someTransform)),
+    _.uniq(_.filter(_.map(arr, someTransform), isNotNullPredicate)),
     someCalculation,
   )
 }
@@ -70,8 +70,8 @@ export function lodashOneByOneOpti(arr) {
 
 export function lodashLazyChain(arr) {
   return _.chain(arr)
-    .filter(someNumIsNotNull)
     .map(someTransform)
+    .filter(isNotNullPredicate)
     .uniq()
     .sumBy(someCalculation)
     .value()
@@ -87,8 +87,8 @@ export function lodashLazyChainOpti(arr) {
 
 export function lodashFp(arr) {
   return fp.pipe(
-    fp.filter(someNumIsNotNull),
     fp.map(someTransform),
+    fp.filter(isNotNullPredicate),
     fp.uniq,
     fp.sumBy(someCalculation),
   )(arr)

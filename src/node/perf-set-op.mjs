@@ -1,6 +1,11 @@
 import Benchmark from 'benchmark'
 import assert from 'assert'
-import { arrSize } from './perf-impl/common.mjs'
+
+const arrSize = parseInt(process.env.ARR_SIZE)
+
+if (!arrSize) {
+  throw new Error('missing ARR_SIZE environment variable')
+}
 
 const setOperationSuite = new Benchmark.Suite('Set Operation')
 
@@ -65,11 +70,10 @@ function toUniqArray4(arr) {
   }
   return result
 }
-
 const ans = toUniqArray(numbers).length
-assert.ok(toUniqArray2(numbers).length === ans)
-assert.ok(toUniqArray3(numbers).length === ans)
-assert.ok(toUniqArray4(numbers).length === ans)
+assert.strictEqual(toUniqArray2(numbers).length, ans)
+assert.strictEqual(toUniqArray3(numbers).length, ans)
+assert.strictEqual(toUniqArray4(numbers).length, ans)
 
 setOperationSuite
   .add('convert toSet and convert to Array', function () {

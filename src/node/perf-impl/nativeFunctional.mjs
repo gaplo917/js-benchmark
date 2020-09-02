@@ -1,7 +1,7 @@
 import {
+  isNotNullPredicate,
   mapNotNullReduceOp,
   someCalculation,
-  someNumIsNotNull,
   someTransform,
   sumByReduceOp,
   sumReduceOp,
@@ -35,7 +35,7 @@ export function nativeReduceImperative(arr) {
 const uniqArr = (arr) => Array.from(new Set(arr))
 
 export function nativeFunctionalOperator(arr) {
-  return uniqArr(arr.filter(someNumIsNotNull).map(someTransform))
+  return uniqArr(arr.map(someTransform).filter(isNotNullPredicate))
     .map(someCalculation)
     .reduce(sumReduceOp, 0)
 }

@@ -2,30 +2,24 @@ import assert from 'assert'
 import Benchmark from 'benchmark'
 import fp from 'lodash/fp.js'
 import {
-  arr,
-  arrSize,
+  createArr,
+  isNotNullPredicate,
   mapNotNullReduceOp,
   someCalculation,
-  someNumIsNotNull,
   someTransform,
-  targetProp,
 } from './perf-impl/common.mjs'
 
+const arrSize = parseInt(process.env.ARR_SIZE)
+
+if (!arrSize) {
+  throw new Error('missing ARR_SIZE environment variable')
+}
 const setOperationSuite = new Benchmark.Suite('Lodash Operation')
 
 function v1Standard(arr) {
   return fp.pipe(
-    fp.filter(someNumIsNotNull),
     fp.map(someTransform),
-    fp.uniq,
-    fp.sumBy(someCalculation),
-  )(arr)
-}
-
-function v1UseString(arr) {
-  return fp.pipe(
-    fp.filter(someNumIsNotNull),
-    fp.map(targetProp),
+    fp.filter(isNotNullPredicate),
     fp.uniq,
     fp.sumBy(someCalculation),
   )(arr)
@@ -39,16 +33,13 @@ function v2(arr) {
   )(arr)
 }
 
+const arr = createArr(arrSize)
 const ans = v1Standard(arr)
-assert.ok(v1UseString(arr) === ans)
-assert.ok(v2(arr) === ans)
+assert.strictEqual(v2(arr), ans)
 
 setOperationSuite
   .add('version 1, use map', function () {
     v1Standard(arr)
-  })
-  .add('version 1, use string to transform', function () {
-    v1UseString(arr)
   })
   .add('version 2, group to reduce for mapNotNull', function () {
     v2(arr)

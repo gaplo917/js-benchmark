@@ -1,14 +1,18 @@
 import assert from 'assert'
 import Benchmark from 'benchmark'
 import {
-  arr,
-  arrSize,
+  createArr,
   isNotNullPredicate,
   someCalculation,
   someTransform,
   sumByReduceOp,
 } from './perf-impl/common.mjs'
 
+const arrSize = parseInt(process.env.ARR_SIZE)
+
+if (!arrSize) {
+  throw new Error('missing ARR_SIZE environment variable')
+}
 const setOperationSuite = new Benchmark.Suite('KtSeqNative Operation')
 
 // simple for iteration + fn declaration
@@ -292,9 +296,10 @@ function v3(arr) {
     .sumBy(someCalculation)
 }
 
+const arr = createArr(arrSize)
 const ans = v1(arr)
-assert.ok(v2(arr) === ans)
-assert.ok(v3(arr) === ans)
+assert.strictEqual(v2(arr), ans)
+assert.strictEqual(v3(arr), ans)
 
 setOperationSuite
   .add('version 1, use filter operation to do distinct', function () {

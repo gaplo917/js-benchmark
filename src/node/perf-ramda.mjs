@@ -1,16 +1,13 @@
 import Benchmark from 'benchmark'
 import assert from 'assert'
-
 import {
-  arr,
-  arrSize,
+  createArr,
+  isNotNullPredicate,
   mapNotNullReduceOp,
   someCalculation,
-  someNumIsNotNull,
   someTransform,
   sumByReduceOp,
   sumReduceOp,
-  targetProp,
 } from './perf-impl/common.mjs'
 import R from 'ramda'
 
@@ -18,18 +15,8 @@ const setOperationSuite = new Benchmark.Suite('Ramda Operation')
 
 function v1Standard(arr) {
   return R.pipe(
-    R.filter(someNumIsNotNull),
     R.map(someTransform),
-    R.uniq,
-    R.map(someCalculation),
-    R.sum,
-  )(arr)
-}
-
-function v1Pluck(arr) {
-  return R.pipe(
-    R.filter(someNumIsNotNull),
-    R.pluck(targetProp),
+    R.filter(isNotNullPredicate),
     R.uniq,
     R.map(someCalculation),
     R.sum,
@@ -52,18 +39,14 @@ function v2Transduce(arr) {
   )(arr)
 }
 
+const arr = createArr(arrSize)
 const ans = v1Standard(arr)
-
-assert.ok(v1Pluck(arr) === ans)
-assert.ok(v2(arr) === ans)
-assert.ok(v2Transduce(arr) === ans)
+assert.strictEqual(v2(arr), ans)
+assert.strictEqual(v2Transduce(arr), ans)
 
 setOperationSuite
   .add('version 1, use map', function () {
     v1Standard(arr)
-  })
-  .add('version 1, use pluck', function () {
-    v1Pluck(arr)
   })
   .add('version 2, group to reduce for mapNotNull', function () {
     v2(arr)

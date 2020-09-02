@@ -6,7 +6,8 @@
     "build": "cross-env NODE_ENV=production webpack --config webpack/webpack.config.prod.js --colors",
     "webpack-test": "rm -rf ./src/generated/*.js && node ./src/node/genJs.mjs && yarn build && ls -al build/js",
     "start": "node src/node/perf.mjs",
-    "start-all": "sh perf.sh"
+    "start-all": "sh perf.sh",
+    "test": "node src/node/perf.test.mjs"
   },
   "repository": {
     "type": "git",
