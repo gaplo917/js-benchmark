@@ -4,7 +4,7 @@
   "description": "Just want to test something.",
   "scripts": {
     "build": "cross-env NODE_ENV=production webpack --config webpack/webpack.config.prod.js --colors",
-    "webpack-test": "rm -rf ./src/generated/*.js && node ./src/node/genJs.mjs && yarn build && ls -al build/js",
+    "webpack-test": "rm -rf ./src/generated/*.js && node src/webpack-bundle/genJs.mjs && yarn build && ls -al build/js",
     "start": "node --max-old-space-size=4096 src/node/perf.mjs",
     "start-all": "sh perf.sh",
     "test": "node src/node/perf.test.mjs"

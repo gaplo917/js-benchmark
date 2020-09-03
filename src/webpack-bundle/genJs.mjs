@@ -1,7 +1,7 @@
 import fs from 'fs'
 import path from 'path'
 
-const fnHeader = `import { sample as arr } from '../data'`
+const fnHeader = `import { sample as arr } from './data'`
 
 function genIdealJs(numOfFunction) {
   const fn = `
