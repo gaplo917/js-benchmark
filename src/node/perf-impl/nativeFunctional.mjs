@@ -7,15 +7,15 @@ import {
   sumReduceOp,
 } from './common.mjs'
 
-Array.prototype.ktMapNotNullNative = function (transform) {
+Array.prototype.ktMapNotNullNativeFp = function (transform) {
   return this.reduce(mapNotNullReduceOp(transform), [])
 }
 
-Array.prototype.ktSumByNative = function (selector) {
+Array.prototype.ktSumByNativeFp = function (selector) {
   return this.reduce(sumByReduceOp(selector), 0)
 }
 
-Array.prototype.ktDistinctNative = function () {
+Array.prototype.ktDistinctNativeFp = function () {
   // choose from perf-set-op.mjs
   return Array.from(new Set(this))
 }
@@ -49,7 +49,7 @@ export function nativeFunctionalOperatorOpti(arr) {
 
 export function arrayExtensionNativeFunctionalOperator(arr) {
   return arr
-    .ktMapNotNullNative(someTransform)
-    .ktDistinctNative()
-    .ktSumByNative(someCalculation)
+    .ktMapNotNullNativeFp(someTransform)
+    .ktDistinctNativeFp()
+    .ktSumByNativeFp(someCalculation)
 }
